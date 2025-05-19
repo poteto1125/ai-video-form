@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -47,10 +48,11 @@
           document.getElementById("resultMessage").innerHTML =
             `<iframe src="${data.video}" allow="autoplay" frameborder="0"></iframe>`;
         } else {
-          document.getElementById("resultMessage").innerText = "動画生成に失敗しました。";
+          document.getElementById("resultMessage").innerText = "動画生成に失敗しました（URLなし）。";
         }
 
       } catch (err) {
+        console.error("Fetch error:", err);
         document.getElementById("resultMessage").innerText = "fetchエラー：" + err.message;
       }
     };
