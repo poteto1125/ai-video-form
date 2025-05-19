@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AI動画生成フォーム</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    input, button { margin-top: 10px; width: 100%; padding: 10px; }
+    iframe { margin-top: 20px; width: 100%; height: 360px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <h2>画像からAI動画を作成</h2>
+  <form id="aiForm">
+    <input type="file" id="imageUpload" accept="image/*">
+    <input type="text" id="promptText" placeholder="例：smile, speak, blink など英語で指示">
+    <button type="submit">生成</button>
+  </form>
+  <div id="resultMessage"></div>
+
+  <script>
+    document.getElementById("aiForm").onsubmit = async function (e) {
+      e.preventDefault();
+
+      const file = document.getElementById("imageUpload").files[0];
+      const prompt = document.getElementById("promptText").value;
+      if (!file || !prompt) {
+        alert("画像と指示文は必須です。");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("prompt", prompt);
+
+      document.getElementById("resultMessage").innerText = "生成中です…しばらくお待ちください。";
+
+      try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbx_M24LmmqtT4CqfIVQupj3_w9PQxokV5BMb_R_R5WNmjloJW2sznjhAmNUaALAZdnRVA/exec", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.video && data.video.includes("http")) {
+          document.getElementById("resultMessage").innerHTML =
+            `<iframe src="${data.video}" allow="autoplay" frameborder="0"></iframe>`;
+        } else {
+          document.getElementById("resultMessage").innerText = "動画生成に失敗しました。";
+        }
+
+      } catch (err) {
+        document.getElementById("resultMessage").innerText = "fetchエラー：" + err.message;
+      }
+    };
+  </script>
+</body>
+</html>
